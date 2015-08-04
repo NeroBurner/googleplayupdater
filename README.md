@@ -1,4 +1,4 @@
-# googleplay-updater-cli
+# googleplay_updater_cli
 Bulk-updater for a folder with apk-files from googleplay
 
 ## Synopsis
