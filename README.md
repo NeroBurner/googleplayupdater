@@ -8,9 +8,37 @@ python2 gp_update.py [-v] <apk_folder_path>
 ```
 
 ## Dependencies
+
+### androguard
 androguard https://github.com/androguard/androguard
 
+Patching:
+
+`git checkout tags/1.9`
+
+in the file `androguard/core/bytecodes/api.py` change the following lines
+
+```
+from androguard.core import bytecode
+from androguard.core import androconf
+from androguard.core.bytecodes.dvm_permissions import DVM_PERMISSIONS
+```
+
+to
+
+```
+from __future__ import absolute_import
+
+from .. import bytecode
+from .. import androconf
+from .dvm_permissions import DVM_PERMISSIONS
+```
+
 googleplay-api https://github.com/timogilvie/googleplay-api
+
+patching:
+in `googleplay_api/googleplay.py` change for all done requests `verify=False` with `verify=True`
+
 
 ## Inspiration
 

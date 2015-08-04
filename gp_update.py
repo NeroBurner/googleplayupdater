@@ -26,9 +26,9 @@ import logging
 
 import config # user-credentials
 
-from googleplay_api.googleplay import GooglePlayAPI #GooglePlayAPI
-from googleplay_api.googleplay import LoginError
-from androguard.androguard.core.bytecodes import apk as androguard_apk #Androguard
+from ext_libs.googleplay_api.googleplay import GooglePlayAPI #GooglePlayAPI
+from ext_libs.googleplay_api.googleplay import LoginError
+from ext_libs.androguard.core.bytecodes import apk as androguard_apk #Androguard
 
 def connect():
 	api = GooglePlayAPI(androidId=config.ANDROID_ID, lang=config.LANG)
