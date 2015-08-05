@@ -53,15 +53,18 @@ def update(playstore_api, apk_folder_path):
 	for position, filename in enumerate(list_of_apks):
 		filepath = os.path.join(apk_folder_path, filename)
 		a = androguard_apk.APK(filepath)
-		apk_version_code = a.get_androidversion_code()
+		apk_version_code = int(a.get_androidversion_code())
 		packagename = a.get_package()
 
-		logging.info("Info: Found apk %s : %s : %s" % (filepath, packagename, apk_version_code))
+		logging.info("Info: Found apk %s : %s : %d" % (filepath, packagename, apk_version_code))
 
 		if packagename in apks_to_update:
 			if apks_to_update[packagename] < apk_version_code:
+				logging.info("Found newer local version %s : %d -> %d" % (packagename, apks_to_update[packagename], apk_version_code))
 				apks_to_update[packagename] = apk_version_code
+				
 		else:
+			logging.info("Set new  local apk %s : %d" % (packagename, apk_version_code))
 			apks_to_update[packagename] = apk_version_code
 
 	if len(apks_to_update) <= 0:
