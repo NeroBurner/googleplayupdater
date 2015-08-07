@@ -1,6 +1,9 @@
 # googleplay_updater_cli
 Bulk-updater for a folder with apk-files from googleplay
 
+## Configure
+Copy the file `config_example.py` or create a new file named `config.py` and fill out your google-account information as well as your `ANDROID_ID`. Your android id can be obtained as descibed in the [googleplay-api](https://github.com/timogilvie/googleplay-api#requirements) project by using the Gtalk Manager on your phone. Or use the java program [android-checkin](https://github.com/nviennot/android-checkin).
+
 ## Synopsis
 ```
 python2 gp_update.py [-v] <apk_folder_path>
@@ -8,11 +11,12 @@ python2 gp_update.py [-v] <apk_folder_path>
 ```
 
 ## Dependencies
+This section describes the dependencies and the changes done to said dependencies.
 
 ### androguard
-androguard https://github.com/androguard/androguard
+Cloned from: https://github.com/androguard/androguard
 
-Patching:
+Using stable version 1.9.
 
 `git checkout tags/1.9`
 
@@ -34,15 +38,15 @@ from .. import androconf
 from .dvm_permissions import DVM_PERMISSIONS
 ```
 
-googleplay-api https://github.com/timogilvie/googleplay-api
+### googleplay-api
+Cloned from https://github.com/timogilvie/googleplay-api
 
-patching:
-in `googleplay_api/googleplay.py` change for all done requests `verify=False` with `verify=True`
+in `googleplay_api/googleplay.py` change, that https-requests are verified. For all done requests replace `verify=False` with `verify=True`
 
 
 ## Inspiration
 
-Inspired by GooglePlayDownloader and its 'Search updates for local APK(s)'-button http://codingteam.net/project/googleplaydownloader
+Inspired by [GooglePlayDownloader](http://codingteam.net/project/googleplaydownloader) and its 'Search updates for local APK(s)'-button 
 
 ## Licence
 This project is released under the GPLv3 licence.
