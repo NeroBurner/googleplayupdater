@@ -19,32 +19,45 @@
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
 
+from __future__ import unicode_literals
 from __future__ import absolute_import
 from __future__ import print_function
 from __future__ import absolute_import
 
-import os, sys
+import os
+import sys
 import logging
 import argparse
 
-import config # user-credentials
+import common
 
 from ext_libs.googleplay_api.googleplay import GooglePlayAPI #GooglePlayAPI
 from ext_libs.googleplay_api.googleplay import LoginError
-from ext_libs.androguard.core.bytecodes import apk as androguard_apk #Androguard
+#from ext_libs.androguard.core.bytecodes import apk as androguard_apk #Androguard
 
 def connect():
-    api = GooglePlayAPI(androidId=config.ANDROID_ID, lang=config.LANG)
+    """
+    Connect to GooglePlayStore using the googleplay-api
+    """
+    global config
+    api = GooglePlayAPI(androidId=config['ANDROID_ID'], lang=config['LANG'])
     try :
-        api.login(config.GOOGLE_LOGIN, config.GOOGLE_PASSWORD, config.AUTH_TOKEN)
-    except LoginError, exc:
+        api.login(config['GOOGLE_LOGIN'], config['GOOGLE_PASSWORD'], config['AUTH_TOKEN'])
+    except LoginError as exc:
         logging.error("Connection to PlayStore failed: %s" % exc)
         return None
 
     logging.info("Connection to GooglePlayStore established")
     return api
 
+
 def update(playstore_api, apk_folder_path):
+    """
+    Search for updates in the given folder
+
+    :param playstore_api: connected api used to search and download apks
+    :param apk_folder_path: directory containing apks to update
+    """
     # search for apks in given folder
     list_of_apks = [filename for filename in os.listdir(apk_folder_path) if os.path.splitext(filename)[1] == ".apk"]
     if len(list_of_apks) <= 0:
@@ -55,9 +68,16 @@ def update(playstore_api, apk_folder_path):
     apks_to_update = dict()
     for filename in list_of_apks:
         filepath = os.path.join(apk_folder_path, filename)
-        a = androguard_apk.APK(filepath)
-        apk_version_code = int(a.get_androidversion_code())
-        packagename = a.get_package()
+
+        # get packagename and versioncode using aant
+        apk_info = common.getApkInfo(filepath)
+        packagename = apk_info['id']
+        apk_version_code = apk_info['versioncode']
+
+        # get packagename and versioncode using androguard
+        #a = androguard_apk.APK(filepath)
+        #apk_version_code = int(a.get_androidversion_code())
+        #packagename = a.get_package()
 
         logging.info("Found apk %s : %s : %d" % (filepath, packagename, apk_version_code))
 
@@ -65,7 +85,6 @@ def update(playstore_api, apk_folder_path):
             if apks_to_update[packagename] < apk_version_code:
                 logging.info("Found newer local version %s : %d -> %d" % (packagename, apks_to_update[packagename], apk_version_code))
                 apks_to_update[packagename] = apk_version_code
-
         else:
             logging.info("Set new  local apk %s : %d" % (packagename, apk_version_code))
             apks_to_update[packagename] = apk_version_code
@@ -105,16 +124,15 @@ def update(playstore_api, apk_folder_path):
 
                 try:
                     open(filepath, "wb").write(data)
-                except IOError, exc:
+                except IOError as exc:
                     logging.error("cannot write to disk %s : %s" % (packagename, exc))
                     continue
                 logging.info("Downloaded apk %s : %d to file %s" % (packagename, store_version_code, filename))
         else:
             logging.info("No newer apk found.")
 
-def synopsis():
-    print("Usage: %s [-v] <apk_folder_path>" % sys.argv[0])
-    print("\t-v\t verbose output")
+config = None
+options = None
 
 def main():
     global config, options
@@ -123,6 +141,7 @@ def main():
     parser = argparse.ArgumentParser(description='Fetch updates for local apks from GooglePlayStore')
     parser.add_argument('apk_folder_path',
             help='absolute or relative path to folder containing the apks to update')
+    parser.add_argument("-c", "--config_file", nargs='?', default="config.py")
     parser.add_argument("-v", "--verbose", action="store_true", default=False,
             help="be more verbose")
     # TODO: --config flag
@@ -131,10 +150,11 @@ def main():
     if args.verbose:
         logging.basicConfig(level=logging.INFO)
 
+    config = common.read_config(args, args.config_file)
+
     # get apk_folder_path
     if not os.path.isdir(args.apk_folder_path):
         logging.error("given <apk_folder_path> is not a directory: %s" % args.apk_folder_path)
-        parser.print_help()
         sys.exit(1)
 
     # connect to Google Play Store
