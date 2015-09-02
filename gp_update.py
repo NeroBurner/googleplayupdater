@@ -25,6 +25,7 @@ from __future__ import absolute_import
 
 import os, sys
 import logging
+import argparse
 
 import config # user-credentials
 
@@ -116,27 +117,24 @@ def synopsis():
     print("\t-v\t verbose output")
 
 def main():
-    #print(sys.argv)
-    min_argc = 2
-    path_index = 1
+    global config, options
 
-    # Check arguments
-    if "-v" in sys.argv:
-        min_argc += 1
-        path_index += 1
+    # Parse command line...
+    parser = argparse.ArgumentParser(description='Fetch updates for local apks from GooglePlayStore')
+    parser.add_argument('apk_folder_path',
+            help='absolute or relative path to folder containing the apks to update')
+    parser.add_argument("-v", "--verbose", action="store_true", default=False,
+            help="be more verbose")
+    # TODO: --config flag
+    args = parser.parse_args()
+
+    if args.verbose:
         logging.basicConfig(level=logging.INFO)
 
-    # TODO: --config flag
-
-    if len(sys.argv) < min_argc:
-        synopsis()
-        sys.exit(1)
-
     # get apk_folder_path
-    apk_folder_path = sys.argv[path_index]
-    if not os.path.isdir(apk_folder_path):
-        logging.error("given <apk_folder_path> is not a directory: %s" % apk_folder_path)
-        synopsis()
+    if not os.path.isdir(args.apk_folder_path):
+        logging.error("given <apk_folder_path> is not a directory: %s" % args.apk_folder_path)
+        parser.print_help()
         sys.exit(1)
 
     # connect to Google Play Store
@@ -146,7 +144,7 @@ def main():
         sys.exit(1)
 
     # update local apks
-    update(playstore_api, apk_folder_path)
+    update(playstore_api, args.apk_folder_path)
 
 if __name__ == '__main__':
     main()
