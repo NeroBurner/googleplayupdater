@@ -6,37 +6,29 @@ Copy the file `config_example.py` or create a new file named `config.py` and fil
 
 ## Synopsis
 ```
-python2 gp_update.py [-v] <apk_folder_path>
-        -v       verbose output
+usage: gp_update.py [-h] [-c [CONFIG_FILE]] [-v] apk_folder_path
+
+Fetch updates for local apks from GooglePlayStore
+
+positional arguments:
+  apk_folder_path       absolute or relative path to folder containing the
+                        apks to update
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c [CONFIG_FILE], --config_file [CONFIG_FILE]
+  -v, --verbose         be more verbose
 ```
 
 ## Dependencies
 This section describes the dependencies and the changes done to said dependencies.
 
-### androguard
-Cloned from: https://github.com/androguard/androguard
+### android-sdk-build-tools
+Tested with version 23
 
-Using stable version 1.9.
+Available from https://developer.android.com/tools/revisions/build-tools.html
 
-`git checkout tags/1.9`
-
-in the file `androguard/core/bytecodes/api.py` change the following lines
-
-```
-from androguard.core import bytecode
-from androguard.core import androconf
-from androguard.core.bytecodes.dvm_permissions import DVM_PERMISSIONS
-```
-
-to
-
-```
-from __future__ import absolute_import
-
-from .. import bytecode
-from .. import androconf
-from .dvm_permissions import DVM_PERMISSIONS
-```
+for archlinux-users via AUR https://aur4.archlinux.org/packages/android-sdk-build-tools/
 
 ### googleplay-api
 Cloned from https://github.com/timogilvie/googleplay-api
