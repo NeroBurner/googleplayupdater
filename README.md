@@ -35,6 +35,10 @@ Cloned from https://github.com/timogilvie/googleplay-api
 
 in `googleplay_api/googleplay.py` change, that https-requests are verified. For all done requests replace `verify=False` with `verify=True`
 
+### AsynchronousFilereader
+Cloned from https://github.com/soxofaan/asynchronousfilereader
+
+Simple thread based asynchronous file reader for Python.
 
 ## Inspiration
 
