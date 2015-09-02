@@ -17,6 +17,8 @@
 #   along with this program; if not, write to the Free Software Foundation,
 #   Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 
+# vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
+
 from __future__ import absolute_import
 from __future__ import print_function
 from __future__ import absolute_import
@@ -31,122 +33,122 @@ from ext_libs.googleplay_api.googleplay import LoginError
 from ext_libs.androguard.core.bytecodes import apk as androguard_apk #Androguard
 
 def connect():
-	api = GooglePlayAPI(androidId=config.ANDROID_ID, lang=config.LANG)
-	try :
-		api.login(config.GOOGLE_LOGIN, config.GOOGLE_PASSWORD, config.AUTH_TOKEN)
-	except LoginError, exc:
-		logging.error("Connection to PlayStore failed: %s" % exc)
-		return None
+    api = GooglePlayAPI(androidId=config.ANDROID_ID, lang=config.LANG)
+    try :
+        api.login(config.GOOGLE_LOGIN, config.GOOGLE_PASSWORD, config.AUTH_TOKEN)
+    except LoginError, exc:
+        logging.error("Connection to PlayStore failed: %s" % exc)
+        return None
 
-	logging.info("Connection to GooglePlayStore established")
-	return api
+    logging.info("Connection to GooglePlayStore established")
+    return api
 
 def update(playstore_api, apk_folder_path):
-	# search for apks in given folder
-	list_of_apks = [filename for filename in os.listdir(apk_folder_path) if os.path.splitext(filename)[1] == ".apk"]
-	if len(list_of_apks) <= 0:
-		print("No apks found in folder %s" % apk_folder_path)
-		sys.exit(0)
+    # search for apks in given folder
+    list_of_apks = [filename for filename in os.listdir(apk_folder_path) if os.path.splitext(filename)[1] == ".apk"]
+    if len(list_of_apks) <= 0:
+        print("No apks found in folder %s" % apk_folder_path)
+        sys.exit(0)
 
-	# create a list of apks, just keep the newest
-	apks_to_update = dict()
-	for filename in list_of_apks:
-		filepath = os.path.join(apk_folder_path, filename)
-		a = androguard_apk.APK(filepath)
-		apk_version_code = int(a.get_androidversion_code())
-		packagename = a.get_package()
+    # create a list of apks, just keep the newest
+    apks_to_update = dict()
+    for filename in list_of_apks:
+        filepath = os.path.join(apk_folder_path, filename)
+        a = androguard_apk.APK(filepath)
+        apk_version_code = int(a.get_androidversion_code())
+        packagename = a.get_package()
 
-		logging.info("Found apk %s : %s : %d" % (filepath, packagename, apk_version_code))
+        logging.info("Found apk %s : %s : %d" % (filepath, packagename, apk_version_code))
 
-		if packagename in apks_to_update:
-			if apks_to_update[packagename] < apk_version_code:
-				logging.info("Found newer local version %s : %d -> %d" % (packagename, apks_to_update[packagename], apk_version_code))
-				apks_to_update[packagename] = apk_version_code
-				
-		else:
-			logging.info("Set new  local apk %s : %d" % (packagename, apk_version_code))
-			apks_to_update[packagename] = apk_version_code
+        if packagename in apks_to_update:
+            if apks_to_update[packagename] < apk_version_code:
+                logging.info("Found newer local version %s : %d -> %d" % (packagename, apks_to_update[packagename], apk_version_code))
+                apks_to_update[packagename] = apk_version_code
 
-	# are there still apks to check? If not something went wrong
-	if len(apks_to_update) <= 0:
-		logging.error("No apks to update after non-empty apk-list. Something went wrong!")
-		sys.exit(1)
+        else:
+            logging.info("Set new  local apk %s : %d" % (packagename, apk_version_code))
+            apks_to_update[packagename] = apk_version_code
 
-	# search for the apks on googleplaystore
-	for packagename, version_code in apks_to_update.items():
-		local_version_code = int(version_code)
-		logging.info("Checking apk %s : %d" % (packagename, local_version_code))
+    # are there still apks to check? If not something went wrong
+    if len(apks_to_update) <= 0:
+        logging.error("No apks to update after non-empty apk-list. Something went wrong!")
+        sys.exit(1)
 
-		# get infos of the store-version
-		m = playstore_api.details(packagename)
-		doc = m.docV2
-		store_version_code = int(doc.details.appDetails.versionCode)
+    # search for the apks on googleplaystore
+    for packagename, version_code in apks_to_update.items():
+        local_version_code = int(version_code)
+        logging.info("Checking apk %s : %d" % (packagename, local_version_code))
 
-		if store_version_code == 0:
-			logging.warning("Got store_version_code == 0 for package %s : %d" % (packagename, local_version_code))
-			continue
+        # get infos of the store-version
+        m = playstore_api.details(packagename)
+        doc = m.docV2
+        store_version_code = int(doc.details.appDetails.versionCode)
 
-		# check if there is an update
-		if store_version_code > local_version_code:
-			# download apk from store
-			print("Updating apk %s : %d -> %d" % (packagename, local_version_code, store_version_code))
-			try:
-				data = playstore_api.download(packagename, store_version_code)
-			except Exception as exc:
-				logging.error("failed to download %s : %s" % (packagename, exc))
-				continue
-			else:
-				# save downloaded apk under '<packagename>_<version>.apk'
-				filename = "%s_%d.apk" % (packagename, store_version_code)
-				filepath = os.path.join(apk_folder_path, filename)
+        if store_version_code == 0:
+            logging.warning("Got store_version_code == 0 for package %s : %d" % (packagename, local_version_code))
+            continue
 
-				try:
-					open(filepath, "wb").write(data)
-				except IOError, exc:
-					logging.error("cannot write to disk %s : %s" % (packagename, exc))
-					continue
-				logging.info("Downloaded apk %s : %d to file %s" % (packagename, store_version_code, filename))
-		else:
-			logging.info("No newer apk found.")
+        # check if there is an update
+        if store_version_code > local_version_code:
+            # download apk from store
+            print("Updating apk %s : %d -> %d" % (packagename, local_version_code, store_version_code))
+            try:
+                data = playstore_api.download(packagename, store_version_code)
+            except Exception as exc:
+                logging.error("failed to download %s : %s" % (packagename, exc))
+                continue
+            else:
+                # save downloaded apk under '<packagename>_<version>.apk'
+                filename = "%s_%d.apk" % (packagename, store_version_code)
+                filepath = os.path.join(apk_folder_path, filename)
+
+                try:
+                    open(filepath, "wb").write(data)
+                except IOError, exc:
+                    logging.error("cannot write to disk %s : %s" % (packagename, exc))
+                    continue
+                logging.info("Downloaded apk %s : %d to file %s" % (packagename, store_version_code, filename))
+        else:
+            logging.info("No newer apk found.")
 
 def synopsis():
-	print("Usage: %s [-v] <apk_folder_path>" % sys.argv[0])
-	print("\t-v\t verbose output")
+    print("Usage: %s [-v] <apk_folder_path>" % sys.argv[0])
+    print("\t-v\t verbose output")
 
 def main():
-	#print(sys.argv)
-	min_argc = 2
-	path_index = 1
+    #print(sys.argv)
+    min_argc = 2
+    path_index = 1
 
-	# Check arguments
-	if "-v" in sys.argv:
-		min_argc += 1
-		path_index += 1
-		logging.basicConfig(level=logging.INFO)
+    # Check arguments
+    if "-v" in sys.argv:
+        min_argc += 1
+        path_index += 1
+        logging.basicConfig(level=logging.INFO)
 
-	# TODO: --config flag
+    # TODO: --config flag
 
-	if len(sys.argv) < min_argc:
-		synopsis()
-		sys.exit(1)
+    if len(sys.argv) < min_argc:
+        synopsis()
+        sys.exit(1)
 
-	# get apk_folder_path
-	apk_folder_path = sys.argv[path_index]
-	if not os.path.isdir(apk_folder_path):
-		logging.error("given <apk_folder_path> is not a directory: %s" % apk_folder_path)
-		synopsis()
-		sys.exit(1)
-	
-	# connect to Google Play Store
-	playstore_api = connect()
-	if playstore_api == None:
-		logging.error("Connection to PlayStore failed. Check provided credencials in config.py")
-		sys.exit(1)
+    # get apk_folder_path
+    apk_folder_path = sys.argv[path_index]
+    if not os.path.isdir(apk_folder_path):
+        logging.error("given <apk_folder_path> is not a directory: %s" % apk_folder_path)
+        synopsis()
+        sys.exit(1)
 
-	# update local apks
-	update(playstore_api, apk_folder_path)
+    # connect to Google Play Store
+    playstore_api = connect()
+    if playstore_api == None:
+        logging.error("Connection to PlayStore failed. Check provided credencials in config.py")
+        sys.exit(1)
+
+    # update local apks
+    update(playstore_api, apk_folder_path)
 
 if __name__ == '__main__':
-	main()
+    main()
 
 
