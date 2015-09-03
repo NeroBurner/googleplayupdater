@@ -30,9 +30,9 @@ import logging
 import argparse
 
 import common
-
-from ext_libs.googleplay_api.googleplay import GooglePlayAPI #GooglePlayAPI
-from ext_libs.googleplay_api.googleplay import LoginError
+sys.path.append('ext_libs/googleplay_api')
+from googleplay import GooglePlayAPI #GooglePlayAPI
+from googleplay import LoginError
 #from ext_libs.androguard.core.bytecodes import apk as androguard_apk #Androguard
 
 def connect():

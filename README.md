@@ -31,9 +31,7 @@ Available from https://developer.android.com/tools/revisions/build-tools.html
 for archlinux-users via AUR https://aur4.archlinux.org/packages/android-sdk-build-tools/
 
 ### googleplay-api
-Cloned from https://github.com/timogilvie/googleplay-api
-
-in `googleplay_api/googleplay.py` change, that https-requests are verified. For all done requests replace `verify=False` with `verify=True`
+Cloned from https://github.com/NeroBurner/googleplay-api which is a fork from https://github.com/timogilvie/googleplay-api
 
 ### AsynchronousFilereader
 Cloned from https://github.com/soxofaan/asynchronousfilereader

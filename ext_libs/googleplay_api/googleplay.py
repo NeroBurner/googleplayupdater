@@ -1,9 +1,17 @@
 #!/usr/bin/python
 
+# vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
+import os
+import io
+import logging
 import base64
 import gzip
-import pprint
-import StringIO
 import requests
 
 from google.protobuf import descriptor
@@ -12,7 +20,6 @@ from google.protobuf import text_format
 from google.protobuf.message import Message, DecodeError
 
 import googleplay_pb2
-import config
 
 class LoginError(Exception):
     def __init__(self, value):
@@ -25,6 +32,8 @@ class RequestError(Exception):
         self.value = value
     def __str__(self):
         return repr(self.value)
+
+config = None
 
 class GooglePlayAPI(object):
     """Google Play Unofficial API Class
@@ -48,10 +57,10 @@ class GooglePlayAPI(object):
 
     def __init__(self, androidId=None, lang=None, debug=False): # you must use a device-associated androidId value
         self.preFetch = {}
-        if androidId == None:
-            androidId = config.ANDROID_ID
-        if lang == None:
-            lang = config.LANG
+        #if androidId == None:
+        #    androidId = config.ANDROID_ID
+        #if lang == None:
+        #    lang = config.LANG
         self.androidId = androidId
         self.lang = lang
         self.debug = debug
@@ -60,6 +69,30 @@ class GooglePlayAPI(object):
         #         "https" : "http://81.137.100.158:8080",
         #         "ftp"   : "http://81.137.100.158:8080"
         #         }
+
+    @staticmethod
+    def read_config(config_file='config.py'):
+        """
+        Read the repository config
+
+        The config is read from config_file, which is in the current directory.
+        """
+        global config
+
+        if config is not None:
+            return config
+        if not os.path.isfile(config_file):
+            logging.critical("Missing config file.")
+            sys.exit(2)
+
+        config = dict()
+
+        logging.debug("Reading %s" % config_file)
+        with io.open("config.py", "rb") as f:
+            code = compile(f.read(), "config.py", 'exec')
+            exec(code, None, config)
+
+        return config
 
     def toDict(self, protoObj):
         """Converts the (protobuf) result from an API call into a dict, for
@@ -102,7 +135,7 @@ class GooglePlayAPI(object):
 
         # put your auth token in config.py to avoid multiple logins
         if self.debug:
-            print "authSubToken: " + authSubToken
+            print("authSubToken: %s" % authSubToken)
 
     def login(self, email=None, password=None, authSubToken=None, proxy=None):
         """Login to your Google Account. You must provide either:
@@ -110,6 +143,8 @@ class GooglePlayAPI(object):
         - a valid Google authSubToken"""
         if (authSubToken is not None):
             self.setAuthSubToken(authSubToken)
+            self.proxy_dict = proxy
+            # TODO: not really implemented yet
         else:
             if (email is None or password is None):
                 raise Exception("You should provide at least authSubToken or (email and password)")
@@ -138,6 +173,7 @@ class GooglePlayAPI(object):
                 k, v = d.split("=")
                 params[k.strip().lower()] = v.strip()
             if "auth" in params:
+                #print("Auth-Token found: %s" % params["auth"])
                 self.setAuthSubToken(params["auth"])
             elif "error" in params:
                 raise LoginError("server says: " + params["error"])
@@ -172,7 +208,7 @@ class GooglePlayAPI(object):
             else:
                 response = requests.get(url, headers=headers, proxies=self.proxy_dict, verify=True)
             data = response.content
-            # print data
+            #print(data)
         '''
         data = StringIO.StringIO(data)
         gzipper = gzip.GzipFile(fileobj=data)
@@ -247,7 +283,7 @@ class GooglePlayAPI(object):
             path += "&o=%s" % requests.utils.quote(offset)
         message = self.executeRequestApi2(path)
         return message.payload.listResponse
-    
+
     def reviews(self, packageName, filterByDevice=False, sort=2, nb_results=None, offset=None):
         """Browse reviews.
         packageName is the app unique ID.
@@ -261,7 +297,7 @@ class GooglePlayAPI(object):
             path += "&dfil=1"
         message = self.executeRequestApi2(path)
         return message.payload.reviewResponse
-    
+
     def download(self, packageName, versionCode, offerType=1):
         """Download an app and return its raw data (APK file).
 
@@ -274,6 +310,8 @@ class GooglePlayAPI(object):
         message = self.executeRequestApi2(path, data)
 
         url = message.payload.buyResponse.purchaseStatusResponse.appDeliveryData.downloadUrl
+        #print(message)
+        #print(message.payload)
         cookie = message.payload.buyResponse.purchaseStatusResponse.appDeliveryData.downloadAuthCookie[0]
 
         cookies = {

@@ -11,7 +11,7 @@ This library is inspired by those projects, working with the old version of the 
 **This is not an official API. I am not afiliated with Google in any way, and am not responsible of any damage that could be done with it. Use it at your own risk.**
 
 ## Dependencies
-* [Python 2.5+](http://www.python.org)
+* [Python 2.7+ or Python 3.4+](http://www.python.org)
 * [Protocol Buffers](http://code.google.com/p/protobuf/)
 
 ## Requirements
@@ -60,18 +60,16 @@ By default, all scripts have CSV output. You can use Linux's `column` to prettif
 
 You can list all app categories this way:
 
-    $ python categories.py | pp
     ID                   Name
-    GAME                 Jeux
-    NEWS_AND_MAGAZINES   Actualités et magazines
-    COMICS               BD
-    LIBRARIES_AND_DEMO   Bibliothèques et démos
+    GAME                 Games
+    BOOKS_AND_REFERENCE  Books & Reference
+    BUSINESS             Business
+    COMICS               Comics
     COMMUNICATION        Communication
-    ENTERTAINMENT        Divertissement
-    EDUCATION            Enseignement
+    EDUCATION            Education
+    ENTERTAINMENT        Entertainment
     FINANCE              Finance
-
-Sorry for non-French speakers!
+    [...]
 
 ### List subcategories and apps
 
@@ -85,28 +83,28 @@ All categories have subcategories. You can list them with:
 
     $ python list.py WEATHER | pp
     Subcategory ID            Name
-    apps_topselling_paid      Top payant
-    apps_topselling_free      Top gratuit
-    apps_topgrossing          Les plus rentables
-    apps_topselling_new_paid  Top des nouveautés payantes
-    apps_topselling_new_free  Top des nouveautés gratuites
+    apps_topselling_paid      Top Selling
+    apps_topselling_free      Top Apps
+    apps_topgrossing          Top Grossing
+    apps_topselling_new_paid  Top Selling New
+    apps_topselling_new_free  Top New Apps
+    apps_movers_shakers       Trending
 
 And then list apps within them:
 
     $ python list.py WEATHER apps_topselling_free | pp
-    Title                  Package name                                  Creator          Super Dev  Price    Offer Type  Version Code  Size    Rating  Num Downloads
-    La chaine météo        com.lachainemeteo.androidapp                  METEO CONSULT    0          Gratuit  1           8             4.6MB   4.38    1 000 000+
-    Météo-France           fr.meteo                                      Météo-France     0          Gratuit  1           11            2.4MB   3.63    1 000 000+
-    GO Weather EX          com.gau.go.launcherex.gowidget.weatherwidget  GO Launcher EX   0          Gratuit  1           25            6.5MB   4.40    10 000 000+
-    Thermomètre (Gratuit)  com.xiaad.android.thermometertrial            Mobiquité        0          Gratuit  1           60            3.6MB   3.78    1 000 000+
-
+    Title                           Package name                             Creator                        Super Dev  Price  Offer Type  Version Code  Size    Rating  Num Downloads
+    wetter.com                      com.wetter.androidclient                 wetter.com GmbH                0          Free   1           1514242001    10.3MB  4.07    10,000,000+
+    Weather Austria XL PRO          com.exovoid.weather.app.at               Exovoid Sàrl                   0          Free   1           29            12.4MB  4.39    50,000+
+    MORECAST- Free Premium Weather  com.morecast.weather                     UBIMET                         0          Free   1           206           12.7MB  4.42    500,000+
+    [...]
 ### Viewing permissions
 
 You can use `permissions.py` to see what permissions are required by an app without downloading it:
 
     $ python search.py gmail 1 | pp
-    Titre  Package name           Creator      Super Dev  Price    Offer Type  Version Code  Size   Rating  Num Downloads
-    Gmail  com.google.android.gm  Google Inc.  1          Gratuit  1           403           2.7MB  4.32    100 000 000+
+    Title  Package name           Creator      Super Dev  Price  Offer Type  Version Code  Size    Rating  Num Downloads
+    Gmail  com.google.android.gm  Google Inc.  1          Free   1           55008625      12.1MB  4.30    1,000,000,000+
 
     $ python permissions.py com.google.android.gm
     android.permission.ACCESS_NETWORK_STATE
@@ -141,7 +139,7 @@ An interactive shell can be started using the `apishell.py` script. It initializ
     Successfully logged in using your Google account. The variable 'api' holds the API object.
     Feel free to use help(api).
 
-    >>> print api.__doc__
+    >>> print(api.__doc__)
     Google Play Unofficial API Class
       Usual APIs methods are login(), search(), details(), download(), browse() and list().
       toStr() can be used to pretty print the result (protobuf object) of the previous methods.
@@ -149,30 +147,31 @@ An interactive shell can be started using the `apishell.py` script. It initializ
 
     >>> res = api.search("angry birds")
     >>> for i in res.doc[0].child:
-    ...   print i.title.encode('utf8')
-    ...
+    ...     print(helpers.str_compat(i.title))
+    ... 
     Angry Birds
-    Angry Birds Seasons
-    Angry Birds Space
+    Angry Birds 2
+    Angry Birds POP Bubble Shooter
     Angry Birds Rio
-    Angry Birds Space Premium
-    Angry Birds - AngryBirdsBackup
-    Angry Aviary LiteÔÿà Angry Birds
+    Angry Birds Transformers
+    Angry Birds Star Wars II Free
+    Angry Birds Go!
     [...]
 
 All results returned by methods such as `search()`, `details()`, ..., are Protobuf objects. You can use `toStr` and `toDict` method from `GooglePlayAPI` to pretty-print them and make introspection easier if you're not familiar with Protobuf.
 
     >>> s = api.browse()
     >>> s
-    <googleplay_pb2.BrowseResponse object at 0x025DBF48>
+    <googleplay_pb2.BrowseResponse object at 0x7f51838c7748>
     >>> d = api.toDict(s)
-    >>> d.keys()
+    >>> d.keys() # on Python 2
     ['promoUrl', 'category', 'contentsUrl']
-    >>> from pprint import pprint
-    >>> pprint(d['category'])
-    [{'dataUrl': u'browse?c=3&cat=GAME', 'name': u'Jeux'},
-     {'dataUrl': u'browse?c=3&cat=NEWS_AND_MAGAZINES',
+    >>> d.keys() # on Python 3
+    dict_keys(['promoUrl', 'contentsUrl', 'category'])
+    >>> print(d['category'])
+    [{'name': 'Games', 'dataUrl': 'browse?c=3&cat=GAME'}, {'name': 'Books & Reference', 'dataUrl': 'browse?c=3&cat=BOOKS_AND_REFERENCE'}, {'name': 'Business', 'dataUrl': 'browse?c=3&cat=BUSINESS'}, {'name': 'Comics', 'dataUrl': 'browse?c=3&cat=COMICS'},
     [...]
+
 
 ### Using the API as a module in another project
 
