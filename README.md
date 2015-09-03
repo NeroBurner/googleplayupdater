@@ -2,7 +2,7 @@
 Bulk-updater for a folder with apk-files from googleplay
 
 ## Configure
-Copy the file `config_example.py` or create a new file named `config.py` and fill out your google-account information as well as your `ANDROID_ID`. Your android id can be obtained as descibed in the [googleplay-api](https://github.com/timogilvie/googleplay-api#requirements) project by using the Gtalk Manager on your phone. Or use the java program [android-checkin](https://github.com/nviennot/android-checkin).
+Copy the file `config_example.py` or create a new file named `config.py` and fill out your google-account information as well as your `ANDROID_ID`. Your android id can be obtained as descibed in the [googleplay-api](https://github.com/NeroBurner/googleplay-api#requirements) project by using the Gtalk Manager on your phone. Or use the java program [android-checkin](https://github.com/nviennot/android-checkin).
 
 ## Synopsis
 ```
@@ -21,14 +21,12 @@ optional arguments:
 ```
 
 ## Dependencies
-This section describes the dependencies and the changes done to said dependencies.
+* [Python 2.7+ or Python 3.4+](http://www.python.org)
+* [Protocol Buffers](http://code.google.com/p/protobuf/) (for googleplay-api)
+* [android-sdk-build-tools](https://developer.android.com/tools/revisions/build-tools.html)
+  (tested with version 23, for archlinux-users via [AUR](https://aur4.archlinux.org/packages/android-sdk-build-tools/))
 
-### android-sdk-build-tools
-Tested with version 23
-
-Available from https://developer.android.com/tools/revisions/build-tools.html
-
-for archlinux-users via AUR https://aur4.archlinux.org/packages/android-sdk-build-tools/
+## Included libraries
 
 ### googleplay-api
 Cloned from https://github.com/NeroBurner/googleplay-api which is a fork from https://github.com/timogilvie/googleplay-api
