@@ -31,21 +31,14 @@ import time
 import threading
 import logging
 
-#try:
-#    # Python 2
-#    from Queue import Queue
-#except ImportError:
-#    # Python 3
-#    from queue import Queue
-
 from asynchronousfilereader import AsynchronousFileReader
 
 config = None
 options = None
 env = None
 
-# from fdroidserver
 
+# from fdroidserver
 def read_config(opts, config_file='config.py'):
     """Read the repository config
 
@@ -79,10 +72,6 @@ def read_config(opts, config_file='config.py'):
         if not (key in config):
             config[key] = cfg[key]
 
-    #execfile(config_file, config)
-
-    #fill_config_defaults(config)
-
     # There is no standard, so just set up the most common environment
     # variables
     env = os.environ
@@ -93,35 +82,10 @@ def read_config(opts, config_file='config.py'):
     return config
 
 
-#class AsynchronousFileReader(threading.Thread):
-#
-#    '''
-#    Helper class to implement asynchronous reading of a file
-#    in a separate thread. Pushes read lines on a queue to
-#    be consumed in another thread.
-#    '''
-#
-#    def __init__(self, fd, queue):
-#        assert isinstance(queue, Queue.Queue)
-#        assert callable(fd.readline)
-#        threading.Thread.__init__(self)
-#        self._fd = fd
-#        self._queue = queue
-#
-#    def run(self):
-#        '''The body of the tread: read lines and put them on the queue.'''
-#        for line in iter(self._fd.readline, ''):
-#            self._queue.put(line)
-#
-#    def eof(self):
-#        '''Check whether there is no more content to expect.'''
-#        return not self.is_alive() and self._queue.empty()
-
-
-
 class PopenResult:
     returncode = None
     output = ''
+
 
 def find_sdk_tools_cmd(cmd):
     '''find a working path to a tool from the Android SDK'''
@@ -144,15 +108,13 @@ def find_sdk_tools_cmd(cmd):
         sdk_tools = os.path.join(config['sdk_path'], 'tools')
         if os.path.exists(sdk_tools):
             tooldirs.append(sdk_tools)
-        #sdk_platform_tools = os.path.join(config['sdk_path'], 'platform-tools')
-        #if os.path.exists(sdk_platform_tools):
-        #    tooldirs.append(sdk_platform_tools)
     tooldirs.append('/usr/bin')
     for d in tooldirs:
         if os.path.isfile(os.path.join(d, cmd)):
             return os.path.join(d, cmd)
     # did not find the command, exit with error message
     ensure_build_tools_exists(config)
+
 
 def test_sdk_exists(thisconfig):
     if 'sdk_path' not in thisconfig:
@@ -161,18 +123,12 @@ def test_sdk_exists(thisconfig):
         else:
             logging.error("'sdk_path' not set in config.py!")
             return False
-    #if thisconfig['sdk_path'] == default_config['sdk_path']:
-    #    logging.error('No Android SDK found!')
-    #    logging.error('You can use ANDROID_HOME to set the path to your SDK, i.e.:')
-    #    logging.error('\texport ANDROID_HOME=/opt/android-sdk')
-    #    return False
     if not os.path.exists(thisconfig['sdk_path']):
         logging.critical('Android SDK path "' + thisconfig['sdk_path'] + '" does not exist!')
         return False
     if not os.path.isdir(thisconfig['sdk_path']):
         logging.critical('Android SDK path "' + thisconfig['sdk_path'] + '" is not a directory!')
         return False
-    #for d in ['build-tools', 'platform-tools', 'tools']:
     for d in ['build-tools']:
         if not os.path.isdir(os.path.join(thisconfig['sdk_path'], d)):
             logging.critical('Android SDK path "%s" does not contain "%s/"!' % (
@@ -190,7 +146,6 @@ def ensure_build_tools_exists(thisconfig):
         logging.critical('Android Build Tools path "'
                          + versioned_build_tools + '" does not exist!')
         sys.exit(3)
-
 
 
 def SdkToolsPopen(commands, cwd=None, output=True):
@@ -272,4 +227,3 @@ def getApkInfo(apkfile):
                 sys.exit(1)
 
     return thisinfo
-

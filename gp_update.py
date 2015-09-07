@@ -31,9 +31,10 @@ import argparse
 
 import common
 sys.path.append('ext_libs/googleplay_api')
-from googleplay import GooglePlayAPI #GooglePlayAPI
+from googleplay import GooglePlayAPI  # GooglePlayAPI
 from googleplay import LoginError
-#from ext_libs.androguard.core.bytecodes import apk as androguard_apk #Androguard
+#  from ext_libs.androguard.core.bytecodes import apk as androguard_apk #Androguard
+
 
 def connect():
     """
@@ -41,7 +42,7 @@ def connect():
     """
     global config
     api = GooglePlayAPI(androidId=config['ANDROID_ID'], lang=config['LANG'])
-    try :
+    try:
         api.login(config['GOOGLE_LOGIN'], config['GOOGLE_PASSWORD'], config['AUTH_TOKEN'])
     except LoginError as exc:
         logging.error("Connection to PlayStore failed: %s" % exc)
@@ -75,9 +76,9 @@ def update(playstore_api, apk_folder_path):
         apk_version_code = apk_info['versioncode']
 
         # get packagename and versioncode using androguard
-        #a = androguard_apk.APK(filepath)
-        #apk_version_code = int(a.get_androidversion_code())
-        #packagename = a.get_package()
+        # a = androguard_apk.APK(filepath)
+        # apk_version_code = int(a.get_androidversion_code())
+        # packagename = a.get_package()
 
         logging.info("Found apk %s : %s : %d" % (filepath, packagename, apk_version_code))
 
@@ -134,17 +135,18 @@ def update(playstore_api, apk_folder_path):
 config = None
 options = None
 
+
 def main():
     global config, options
 
     # Parse command line...
     parser = argparse.ArgumentParser(description='Fetch updates for local apks from GooglePlayStore')
     parser.add_argument('apk_folder_path',
-            help='absolute or relative path to folder containing the apks to update')
+                        help='absolute or relative path to folder containing the apks to update')
     parser.add_argument("-c", "--config_file", nargs='?', default="config.py")
     parser.add_argument("-v", "--verbose", action="store_true", default=False,
-            help="be more verbose")
-    # TODO: --config flag
+                        help="be more verbose")
+
     args = parser.parse_args()
 
     if args.verbose:
@@ -159,7 +161,7 @@ def main():
 
     # connect to Google Play Store
     playstore_api = connect()
-    if playstore_api == None:
+    if playstore_api is None:
         logging.error("Connection to PlayStore failed. Check provided credencials in config.py")
         sys.exit(1)
 
@@ -168,5 +170,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
