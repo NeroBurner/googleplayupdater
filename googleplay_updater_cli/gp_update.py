@@ -29,10 +29,9 @@ import sys
 import logging
 import argparse
 
-import common
-sys.path.append('ext_libs/googleplay_api')
-from ext_libs.googleplay_api.googleplay import GooglePlayAPI  # GooglePlayAPI
-from ext_libs.googleplay_api.googleplay import LoginError
+from googleplay_updater_cli import common
+from googleplay_api.googleplay import GooglePlayAPI  # GooglePlayAPI
+from googleplay_api.googleplay import LoginError
 
 
 def connect():

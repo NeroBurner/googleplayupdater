@@ -31,7 +31,7 @@ import time
 import threading
 import logging
 
-from asynchronousfilereader import AsynchronousFileReader
+from googleplay_updater_cli.asynchronousfilereader import AsynchronousFileReader
 
 config = None
 options = None
