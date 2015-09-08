@@ -84,7 +84,7 @@ setup(
     # pip to create the appropriate form of executable for the target platform.
     entry_points={
         'console_scripts': [
-            'gp_update=googleplay_updater_cli.gp_update:main',
+            'googleplay_updater_cli=googleplay_updater_cli.gp_update:main',
         ],
     },
 )
