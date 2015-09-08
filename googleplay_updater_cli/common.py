@@ -22,13 +22,16 @@
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import io
 import os
 import sys
 import re
 import subprocess
-import time
-import threading
 import logging
 
 from googleplay_updater_cli.asynchronousfilereader import AsynchronousFileReader
