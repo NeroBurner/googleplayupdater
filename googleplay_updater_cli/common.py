@@ -41,6 +41,13 @@ options = None
 env = None
 
 
+def str_compat(text):
+    if sys.version_info[0] >= 3: # python 3
+        return text
+    else: # Python 2
+        return text.encode('utf8', 'replace')
+
+
 # from fdroidserver
 def read_config(opts, config_file='config.py'):
     """Read the repository config
@@ -187,7 +194,7 @@ def FDroidPopen(commands, cwd=None, output=True):
     reader = AsynchronousFileReader(p.stdout)
     while not reader.eof():
         for line in reader.readlines():
-            result.output += line.decode()
+            result.output += line.decode('utf-8')
 
     reader.join()
 
