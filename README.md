@@ -1,4 +1,4 @@
-# googleplay_updater_cli
+# googleplayupdater
 Bulk-updater for a folder with apk-files from googleplay
 
 ## Configure
@@ -6,7 +6,7 @@ Copy the file `config_example.py` or create a new file named `config.py` and fil
 
 ## Synopsis
 ```
-usage: googleplay_updater_cli [-h] [-c [CONFIG_FILE]] [-v] apk_folder_path
+usage: googleplayupdater [-h] [-c [CONFIG_FILE]] [-v] apk_folder_path
 
 Fetch updates for local apks from GooglePlayStore
 
@@ -42,11 +42,11 @@ pip install https://pypi.python.org/packages/source/p/protobuf/protobuf-3.0.0a3.
 
 Otherwise an exception like the following will occur:
 ```
-File "[...]/googleplay_updater_cli/googleplay_updater_cli/gp_update.py", line 33, in <module>
+File "[...]/googleplayupdater/googleplayupdater/gp_update.py", line 33, in <module>
     from googleplay_api.googleplay import GooglePlayAPI  # GooglePlayAPI
-  File "[...]/googleplay_updater_cli/googleplay_api/googleplay.py", line 19, in <module>
+  File "[...]/googleplayupdater/googleplay_api/googleplay.py", line 19, in <module>
     from google.protobuf import text_format
-  File "[...]/googleplay_updater_cli/venv3/lib/python3.4/site-packages/google/protobuf/text_format.py", line 572
+  File "[...]/googleplayupdater/venv3/lib/python3.4/site-packages/google/protobuf/text_format.py", line 572
     except ValueError, e:
 ```
 
