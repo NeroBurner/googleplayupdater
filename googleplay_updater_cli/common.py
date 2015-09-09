@@ -66,21 +66,17 @@ def read_config(opts, config_file='config.py'):
     options = opts
 
     config = dict()
-    config['sdk_path'] = '/opt/android-sdk/'
-    config['build_tools'] = '23'
-
-    global_vars = dict()
-    cfg = dict()
 
     logging.debug("Reading %s" % config_file)
-    with io.open("config.py", "rb") as f:
-        code = compile(f.read(), "config.py", 'exec')
-        exec(code, None, cfg)
+    with io.open(config_file, "rb") as f:
+        code = compile(f.read(), config_file, 'exec')
+        exec(code, None, config)
 
     # don't overwrite already set configs
-    for key in cfg:
+    default_configs = [('sdk_path','/opt/android-sdk/'), ('build_tools','23')]
+    for (key,value) in default_configs:
         if not (key in config):
-            config[key] = cfg[key]
+            config[key] = value
 
     # There is no standard, so just set up the most common environment
     # variables
