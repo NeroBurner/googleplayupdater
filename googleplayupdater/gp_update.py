@@ -141,7 +141,8 @@ def main():
     parser = argparse.ArgumentParser(description='Fetch updates for local apks from GooglePlayStore')
     parser.add_argument('apk_folder_path',
                         help='absolute or relative path to folder containing the apks to update')
-    parser.add_argument("-c", "--config_file", nargs='?', default="config.py")
+    parser.add_argument("-c", "--config_file", nargs='?', default="config.py",
+                        help='configfile to read configs from, default="config.py"')
     parser.add_argument("-v", "--verbose", action="store_true", default=False,
                         help="be more verbose")
 
