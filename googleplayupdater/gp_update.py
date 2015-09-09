@@ -29,7 +29,7 @@ import sys
 import logging
 import argparse
 
-from googleplay_updater_cli import common
+from googleplayupdater import common
 from googleplay_api.googleplay import GooglePlayAPI  # GooglePlayAPI
 from googleplay_api.googleplay import LoginError
 

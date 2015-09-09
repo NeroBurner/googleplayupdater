@@ -34,7 +34,7 @@ import re
 import subprocess
 import logging
 
-from googleplay_updater_cli.asynchronousfilereader import AsynchronousFileReader
+from googleplayupdater.asynchronousfilereader import AsynchronousFileReader
 
 config = None
 options = None

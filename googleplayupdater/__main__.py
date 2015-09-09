@@ -19,5 +19,5 @@
 
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
 
-from googleplay_updater_cli.gp_update import main
+from googleplayupdater.gp_update import main
 main()

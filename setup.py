@@ -2,12 +2,12 @@
 from setuptools import setup
 
 setup(
-    name='googleplay_updater_cli',
+    name='googleplayupdater',
 
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='0.1.0',
+    version='0.1.1',
 
     description='Bulk-updater for a folder with apk-files from googleplay',
     #long_description=long_description,
@@ -49,7 +49,7 @@ setup(
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
-    packages=['googleplay_updater_cli', 'googleplay_api'],
+    packages=['googleplayupdater', 'googleplay_api'],
 
     # List run-time dependencies here.  These will be installed by pip when
     # your project is installed. For an analysis of "install_requires" vs pip's
@@ -84,7 +84,7 @@ setup(
     # pip to create the appropriate form of executable for the target platform.
     entry_points={
         'console_scripts': [
-            'googleplay_updater_cli=googleplay_updater_cli.gp_update:main',
+            'googleplayupdater=googleplayupdater.gp_update:main',
         ],
     },
 )
