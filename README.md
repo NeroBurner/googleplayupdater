@@ -65,6 +65,6 @@ Simple thread based asynchronous file reader for Python.
 Inspired by [GooglePlayDownloader](http://codingteam.net/project/googleplaydownloader) and its 'Search updates for local APK(s)'-button 
 
 ## Licence
-This project is released under the GPLv3 licence.
+This project is released under the AGPLv3+ licence.
 
 
